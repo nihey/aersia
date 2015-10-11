@@ -10,12 +10,16 @@ class Index extends React.Component {
 
     let track = this.state.tracks[index];
     let audio = new Audio(track.location);
-    this.setState({audio, index}, function() {
+    this.setState({audio, index, playing: false, disabled: true}, function() {
       let offset = this.refs.controlBar.clientHeight;
       let scrollY = this.refs['track_' + index].getBoundingClientRect().top;
       window.scrollBy(0, scrollY - offset);
 
-      audio.addEventListener('ended', () => this.randomize());
+      audio.addEventListener('playing', () => this.setState({playing: true, disabled: false}));
+      audio.addEventListener('pause', () => this.setState({playing: false}));
+      audio.addEventListener('ended', () => {
+        this.setState({playing: false}, () => {this.randomize()});
+      });
       audio.volume = 0.5;
       audio.play();
     }, this);
@@ -34,6 +38,12 @@ class Index extends React.Component {
     return () => {
       return this.select(index);
     }
+  }
+
+  togglePlay() {
+    let playing = this.state.playing;
+    playing && this.state.audio.pause();
+    playing || this.state.audio.play();
   }
 
   /*
@@ -61,7 +71,9 @@ class Index extends React.Component {
   render() {
     return <div>
       <div className="control-bar" ref="controlBar">
-        <button className="square"><i className="fa fa-play"/></button>
+        <button className="square" onClick={this.togglePlay.bind(this)} disabled={this.state.disabled}>
+          <i className={'fa ' + (this.state.playing ? 'fa-pause' : 'fa-play')}/>
+        </button>
         <button className="square"><i className="fa fa-step-backward"/></button>
         <button className="square"><i className="fa fa-step-forward"/></button>
         <button className="square"><i className="fa fa-random"/></button>
