@@ -1,6 +1,63 @@
+@import "../node_modules/font-awesome/css/font-awesome.min.css";
+
+* {
+  box-sizing: border-box;
+}
+
 html, body {
   margin: 0;
   background-color: #003366;
+}
+
+@height: 18px;
+
+.control-bar {
+  position: fixed;
+  width: 100%;
+  height: @height + 4px;
+  line-height: @height + 2px;
+  font-size: @height/2;
+
+  > * {
+    display: inline-block;
+    height: @height + 3px;
+    font-size: inherit;
+    color: #fd8f47;
+    background-image: linear-gradient(to bottom, #3d6389, #03294f);
+    border: 1px solid #c0ccd9;
+    border-right: none;
+
+    &:nth-child(4), &:last-child {
+      border-right: 1px solid #c0ccd9;
+    }
+  }
+
+  > .square {
+    width: @height + 3px;
+    float: left;
+  }
+
+  > .progress {
+    display: block;
+
+    > * {
+      margin: 0 3px;
+    }
+
+    > .progress-bar {
+      position: absolute;
+      height: 3px;
+      background-color: black;
+      top: 8.5px;
+      left: 120px;
+      right: 53px;
+    }
+  }
+
+  > .volume {
+    width: 50px;
+    float: right;
+  }
 }
 
 .tracks {
@@ -8,8 +65,6 @@ html, body {
   padding: 0;
 
   > li {
-    @height: 18px;
-
     padding: 2px 10px;
     height: @height;
     line-height: @height;

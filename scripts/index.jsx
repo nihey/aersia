@@ -11,10 +11,13 @@ class Index extends React.Component {
     let track = this.state.tracks[index];
     let audio = new Audio(track.location);
     this.setState({audio, index}, function() {
-      this.refs['track_' + index].scrollIntoView();
+      let offset = this.refs.controlBar.clientHeight;
+      let scrollY = this.refs['track_' + index].getBoundingClientRect().top;
+      window.scrollBy(0, scrollY - offset);
+
+      audio.addEventListener('ended', () => this.randomize());
       audio.volume = 0.5;
       audio.play();
-      audio.addEventListener('ended', () => this.randomize());
     }, this);
   }
 
@@ -29,7 +32,7 @@ class Index extends React.Component {
 
   onSelect(index) {
     return () => {
-      this.select(index);
+      return this.select(index);
     }
   }
 
@@ -56,14 +59,27 @@ class Index extends React.Component {
   }
 
   render() {
-    return <ul className="tracks">
-      {this.state.tracks.map(function(track, index) {
-        return <li key={index} ref={`track_${index}`} className={this.state.index === index ? 'active' : ''}
-                   onClick={this.onSelect(index)}>
-          {track.creator} - {track.title}
-        </li>
-      }, this)}
-    </ul>;
+    return <div>
+      <div className="control-bar" ref="controlBar">
+        <button className="square"><i className="fa fa-play"/></button>
+        <button className="square"><i className="fa fa-step-backward"/></button>
+        <button className="square"><i className="fa fa-step-forward"/></button>
+        <button className="square"><i className="fa fa-random"/></button>
+        <div className="volume"></div>
+        <div className="progress">
+          <span>00:00</span>
+          <div className="progress-bar"></div>
+        </div>
+      </div>
+      <ul className="tracks">
+        {this.state.tracks.map(function(track, index) {
+          return <li key={index} ref={`track_${index}`} className={this.state.index === index ? 'active' : ''}
+                     onClick={this.onSelect(index)}>
+            {track.creator} - {track.title}
+          </li>
+        }, this)}
+      </ul>;
+    </div>
   }
 }
 
