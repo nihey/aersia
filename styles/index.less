@@ -1,7 +1,13 @@
 @import "../node_modules/font-awesome/css/font-awesome.min.css";
 
+@font-face {
+  font-family: 'ModeSeven';
+  src: url('../assets/fonts/mode-seven.ttf');
+}
+
 * {
   box-sizing: border-box;
+  font-family: 'ModeSeven', Arial;
 }
 
 html, body {
@@ -69,6 +75,7 @@ html, body {
 
     > .percentage {
       float: right;
+      padding-right: 4px;
     }
 
     > .progress-bar {
@@ -76,7 +83,7 @@ html, body {
       height: 22px;
       margin-top: -22px;
       left: 120px;
-      right: 132px;
+      right: 136px;
 
       > .bar {
         height: 3px;
@@ -139,10 +146,11 @@ html, body {
   padding: 0;
 
   > li {
+    white-space: nowrap;
     padding: 2px 10px;
     height: @height;
     line-height: @height;
-    font-size: @height/1.6;
+    font-size: @height/1.7;
     list-style-type: none;
     background-color: #183c63;
     color: #fd8f47;
@@ -173,5 +181,22 @@ html, body {
       color: #fd8f47;
       text-decoration: none;
     }
+  }
+}
+
+.acknowledgement {
+  position: fixed;
+  padding: 4px;
+  z-index: 1000;
+  bottom: 5px;
+  right: 50px;
+  font-size: 10px;
+  background-color: fade(#6C7A89, 40%);
+  border-radius: 2px;
+
+  > a {
+    text-decoration: none;
+    font-size: 12px;
+    color: #EB9532;
   }
 }

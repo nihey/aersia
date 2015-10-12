@@ -40,6 +40,17 @@ class Index extends React.Component {
     audio && audio.pause();
   }
 
+  scroll(top) {
+    scroll.top(document.body, top, {
+      duration: 400,
+      ease: 'outQuart',
+    });
+    scroll.top(document.getElementsByTagName('html')[0], top, {
+      duration: 400,
+      ease: 'outQuart',
+    });
+  }
+
   play(index=0, advance=true) {
     let track = this.state.tracks[index];
     let audio = new Audio(track.location);
@@ -64,10 +75,7 @@ class Index extends React.Component {
     }, function() {
       let offset = this.refs.controlBar.clientHeight;
       let scrollY = this.refs['track_' + index].offsetTop;
-      scroll.top(document.body, scrollY - offset, {
-        duration: 400,
-        ease: 'outQuart',
-      });
+      this.scroll(scrollY - offset);
 
       // Progress bar updating (for loading and playing)
       this.on(audio, 'progress', () => {
@@ -276,8 +284,13 @@ class Index extends React.Component {
             </a>
           </li>
         }, this)}
-      </ul>;
-    </div>
+      </ul>
+      <div className="acknowledgement">
+        developed by <a href="http://nihey.github.io" target="_blank">Nihey</a> /
+        playlist by <a href="https://twitter.com/nekotendo" target="_blank">Cats777</a> /
+        source code on <a href="https://github.com/nihey/aersia" target="_blank"><i className="fa fa-github"/></a>
+      </div>
+    </div>;
   }
 }
 
