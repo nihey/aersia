@@ -10,9 +10,36 @@ let pad = function(number) {
 };
 
 class Index extends React.Component {
-  select(index=0, advance=true) {
-    this.state.audio && this.state.audio.pause();
+  on(audio, event, callback) {
+    this['__eventListener_' + event] = callback;
+    audio.addEventListener(event, this['__eventListener_' + event]);
+  }
 
+  off(audio, event) {
+    audio.removeEventListener(event, this['__eventListener_' + event]);
+  }
+
+  select(index=0, advance=true) {
+    // Cleanup all event listeners
+    Object.keys(this).forEach(function(key) {
+      if (key.search(/^__eventListener_/) !== -1) {
+        this.off(this.state.audio, key);
+      }
+    }, this);
+
+    let audio = this.state.audio;
+    // If there is no audio or the current audio is paused, play immediately
+    if (!audio || audio.paused) {
+      return this.play(index, advance);
+    }
+
+    // Otherwise, pause the song, and only start playing another one once the
+    // current one has paused
+    this.on(audio, 'pause', () => this.play(index, advance));
+    audio && audio.pause();
+  }
+
+  play(index=0, advance=true) {
     let track = this.state.tracks[index];
     let audio = new Audio(track.location);
     let historyIndex = this.state.historyIndex;
@@ -35,27 +62,29 @@ class Index extends React.Component {
       let scrollY = this.refs['track_' + index].getBoundingClientRect().top;
       window.scrollBy(0, scrollY - offset);
 
-      audio.addEventListener('progress', () => {
+      // Progress bar updating (for loading and playing)
+      this.on(audio, 'progress', () => {
         if (!audio.buffered.length) {
           return;
         }
         // TODO Generalize this loading bar to skipped tracks
         this.state.loading = (audio.buffered.end(0) / audio.duration) * 100;
       });
-
-      audio.addEventListener('timeupdate', () => {
+      this.on(audio, 'timeupdate', () => {
         this.setState({time: audio.currentTime});
       });
 
       // Update React's playing status when the audio fire these events
-      audio.addEventListener('playing', () => this.setState({playing: true, disabled: false}));
-      audio.addEventListener('pause', () => this.setState({playing: false}));
-      audio.addEventListener('ended', () => {
+      this.on(audio, 'playing', () => {
+        this.setState({playing: true, disabled: false});
+      });
+      this.on(audio, 'pause', () => this.setState({playing: false}));
+      this.on(audio, 'ended', () => {
         this.setState({playing: false}, () => {this.randomize()});
       });
 
       // If there was an error, remove the current index and randomize
-      audio.addEventListener('error', () => {
+      this.on(audio, 'error', () => {
         this.state.history.splice(historyIndex, 1)
         this.setState({
           historyIndex: historyIndex - 1,
