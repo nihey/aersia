@@ -4,6 +4,11 @@ import xhr from 'xhr';
 
 import parse from 'parse';
 
+let pad = function(number) {
+  number = (number && parseInt(number).toString()) || '0';
+  return number.length === 1 ? '0' + number : number;
+};
+
 class Index extends React.Component {
   select(index=0, advance=true) {
     this.state.audio && this.state.audio.pause();
@@ -23,10 +28,24 @@ class Index extends React.Component {
       index,
       historyIndex,
       history: this.state.history,
+      time: 0,
+      loading: 0,
     }, function() {
       let offset = this.refs.controlBar.clientHeight;
       let scrollY = this.refs['track_' + index].getBoundingClientRect().top;
       window.scrollBy(0, scrollY - offset);
+
+      audio.addEventListener('progress', () => {
+        if (!audio.buffered.length) {
+          return;
+        }
+        // TODO Generalize this loading bar to skipped tracks
+        this.state.loading = (audio.buffered.end(0) / audio.duration) * 100;
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        this.setState({time: audio.currentTime});
+      });
 
       // Update React's playing status when the audio fire these events
       audio.addEventListener('playing', () => this.setState({playing: true, disabled: false}));
@@ -61,6 +80,17 @@ class Index extends React.Component {
     return () => {
       return this.select(index);
     }
+  }
+
+  onSeek(event) {
+    if (this.state.disabled) {
+      return;
+    }
+
+    // Find the percentage that the click represents to the music
+    let rect = this.refs.progressBar.getBoundingClientRect();
+    let percentage = (event.pageX - rect.left) / rect.width;
+    this.state.audio.currentTime = this.state.audio.duration * percentage;
   }
 
   onStep(offset) {
@@ -101,6 +131,7 @@ class Index extends React.Component {
       audio: null,
       index: null,
       historyIndex: -1,
+      loading: 0,
       disabled: true,
     };
   }
@@ -115,6 +146,18 @@ class Index extends React.Component {
   }
 
   render() {
+    let minutes = Math.floor(this.state.time / 60);
+    let seconds = this.state.time % 60;
+
+    let [remainingMinutes, remainingSeconds] = [0, 0];
+
+    let percentage = 0;
+    if (this.state.audio) {
+      percentage = ((this.state.time / this.state.audio.duration) || 0) * 100;
+      let delta = this.state.audio.duration - this.state.time;
+      remainingMinutes = Math.floor(delta / 60);
+      remainingSeconds = delta % 60;
+    }
     return <div>
       <div className="control-bar" ref="controlBar">
         <button className="square" onClick={this.togglePlay.bind(this)} disabled={this.state.disabled}>
@@ -131,8 +174,13 @@ class Index extends React.Component {
         </button>
         <div className="volume"></div>
         <div className="progress">
-          <span>00:00</span>
-          <div className="progress-bar"></div>
+          <span className="clock">{pad(minutes)}:{pad(seconds)}</span>
+          <div className="progress-bar" ref="progressBar" onClick={this.onSeek.bind(this)}>
+            <div className="bar loading-bar" style={{right: (100 - this.state.loading) + '%'}}></div>
+            <div className="bar track-bar" style={{right: (100 - percentage) + '%'}}></div>
+            <div className="marker" style={{marginLeft: percentage.toFixed(2) + '%'}}></div>
+          </div>
+          <span className="percentage">{pad(remainingMinutes)}:{pad(remainingSeconds)}</span>
         </div>
       </div>
       <ul className="tracks">

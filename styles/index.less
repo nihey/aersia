@@ -30,27 +30,77 @@ html, body {
     &:nth-child(4), &:last-child {
       border-right: 1px solid #c0ccd9;
     }
+
+    &:hover {
+      color: #4687ef;
+    }
   }
 
   > .square {
+    cursor: pointer;
     width: @height + 3px;
     float: left;
   }
 
   > .progress {
     display: block;
+    cursor: pointer;
 
     > * {
       margin: 0 3px;
     }
 
+    > span {
+      display: inline-block;
+      height: 100%;
+    }
+
+    span {
+      cursor: default;
+
+      &:hover {
+        color: #fd8f47;
+      }
+    }
+
+    > .clock {
+      padding-left: 5px;
+    }
+
+    > .percentage {
+      float: right;
+    }
+
     > .progress-bar {
       position: absolute;
-      height: 3px;
-      background-color: black;
-      top: 8.5px;
+      height: 22px;
+      margin-top: -22px;
       left: 120px;
-      right: 53px;
+      right: 82px;
+
+      > .bar {
+        height: 3px;
+        position: absolute;
+        top: 9.8px;
+        left: 0;
+      }
+
+      > .loading-bar {
+        background-color: fade(#fd8f47, 50%);
+      }
+
+      > .track-bar {
+        background-color: #fd8f47;
+      }
+
+      > .marker {
+        width: 5px;
+        height: 10px;
+        border: 1.3px solid #003366;
+        border-radius: 1.5px;
+        background-color: #fd8f47;
+        margin-top: 6px;
+      }
     }
   }
 
