@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import xhr from 'xhr';
+import scroll from 'scroll';
 
 import parse from 'parse';
 
@@ -59,8 +60,11 @@ class Index extends React.Component {
       loading: 0,
     }, function() {
       let offset = this.refs.controlBar.clientHeight;
-      let scrollY = this.refs['track_' + index].getBoundingClientRect().top;
-      window.scrollBy(0, scrollY - offset);
+      let scrollY = this.refs['track_' + index].offsetTop;
+      scroll.top(document.body, scrollY - offset, {
+        duration: 400,
+        ease: 'outQuart',
+      });
 
       // Progress bar updating (for loading and playing)
       this.on(audio, 'progress', () => {
