@@ -91,7 +91,7 @@ class Index extends React.Component {
           history: this.state.history,
         }, this.randomize, this);
       });
-      audio.volume = 0.5;
+      audio.volume = this.state.volume;
       audio.play();
     }, this);
   }
@@ -120,6 +120,21 @@ class Index extends React.Component {
     let rect = this.refs.progressBar.getBoundingClientRect();
     let percentage = (event.pageX - rect.left) / rect.width;
     this.state.audio.currentTime = this.state.audio.duration * percentage;
+  }
+
+  onVolume(event) {
+    if (this.state.disabled) {
+      return;
+    }
+
+    // Find the percentage that the click represents to the music
+    let rect = this.refs.volumeBar.getBoundingClientRect();
+    let percentage = (event.pageX - rect.left) / rect.width;
+    this.setState({volume: percentage}, () => {
+      if (this.state.audio) {
+        this.state.audio.volume = percentage;
+      }
+    });
   }
 
   onStep(offset) {
@@ -162,6 +177,7 @@ class Index extends React.Component {
       historyIndex: -1,
       loading: 0,
       disabled: true,
+      volume: 0.5,
     };
   }
 
@@ -201,7 +217,12 @@ class Index extends React.Component {
         <button className="square" onClick={this.randomize.bind(this)} disabled={this.state.disabled}>
           <i className="fa fa-random"/>
         </button>
-        <div className="volume"></div>
+        <div className="volume">
+          <i className="fa fa-volume-off"/>
+          <div className="volume-control" ref="volumeBar" onClick={this.onVolume.bind(this)}>
+            <div className="volume-bar" style={{width: (this.state.volume * 100) + '%'}}></div>
+          </div>
+        </div>
         <div className="progress">
           <span className="clock">{pad(minutes)}:{pad(seconds)}</span>
           <div className="progress-bar" ref="progressBar" onClick={this.onSeek.bind(this)}>

@@ -76,7 +76,7 @@ html, body {
       height: 22px;
       margin-top: -22px;
       left: 120px;
-      right: 82px;
+      right: 132px;
 
       > .bar {
         height: 3px;
@@ -105,8 +105,32 @@ html, body {
   }
 
   > .volume {
-    width: 50px;
+    width: 100px;
     float: right;
+    border-right: 1px solid #c0ccd9;
+
+    > i {
+      margin-left: 5px;
+      font-size: 12px;
+    }
+
+    > .volume-control {
+      cursor: pointer;
+      height: 10px;
+      width: 75px;
+      background-color: fade(#fd8f47, 30%);
+      margin-left: 16px;
+      margin-top: -16px;
+
+      > .volume-bar {
+        height: 10px;
+        width: 100%;
+        background-color: #fd8f47;
+        border-radius: 0.2em;
+        transition: width 0.2s ease-out;
+      }
+    }
+
   }
 }
 
