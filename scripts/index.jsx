@@ -49,6 +49,9 @@ class Index extends React.Component {
       this.state.history.splice(historyIndex, 0, index);
     }
 
+    let identifier = encodeURIComponent(`${track.creator} - ${track.title}`);
+    location.hash = `#!/${identifier}`;
+
     this.setState({
       audio,
       playing: false,
@@ -110,7 +113,13 @@ class Index extends React.Component {
    */
 
   onSelect(index) {
-    return () => {
+    return (event) => {
+      // In this case, the user just asked for the download keep playing
+      let tagName = event.target.tagName;
+      if (tagName === 'I') {
+        return;
+      }
+
       return this.select(index);
     }
   }
@@ -190,7 +199,27 @@ class Index extends React.Component {
       uri: 'http://aersia.nihey.org',
       useXDR: true,
     }, (err, resp, body) => {
-      this.setState({tracks: parse(body)}, this.randomize);
+      this.setState({tracks: parse(body)}, () => {
+        // No pre-defined song, randomize
+        if (!location.hash.substr(3)) {
+          return this.randomize();
+        }
+
+        let identifier = decodeURIComponent(location.hash.substr(3));
+        let foundIndex = 0;
+        let found = this.state.tracks.some(function(track, index) {
+          foundIndex = index;
+          return `${track.creator} - ${track.title}` === identifier;
+        });
+
+        // Pre-defined song was not found, randomize
+        if (!found) {
+          return this.randomize();
+        }
+
+        // Pre-defined song found, play it
+        this.select(foundIndex);
+      });
     });
   }
 
@@ -242,6 +271,9 @@ class Index extends React.Component {
           return <li key={index} ref={`track_${index}`} className={this.state.index === index ? 'active' : ''}
                      onClick={this.onSelect(index)}>
             {track.creator} - {track.title}
+            <a href={track.location} download={`${track.creator} - ${track.title}`}>
+              <i className="fa fa-download"/>
+            </a>
           </li>
         }, this)}
       </ul>;

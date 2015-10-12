@@ -153,6 +153,10 @@ html, body {
     &.active {
       color: #003366;
       background-color: #fd8f47;
+
+      > a {
+        color: #003366;
+      }
     }
 
     &:hover {
@@ -162,6 +166,12 @@ html, body {
 
     &:last-child {
       margin-bottom: 0;
+    }
+
+    > a {
+      float: right;
+      color: #fd8f47;
+      text-decoration: none;
     }
   }
 }
