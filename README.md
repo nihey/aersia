@@ -36,6 +36,7 @@ $ open dist/index.html
 
 # Acknowledgements
 
+- Original player [here](http://vip.aersia.net/)
 - [Cats777](https://twitter.com/nekotendo) curate this playlist
 - [ModeSeven](http://www.fontspace.com/andrew-bulhak/modeseven) font used.
 
