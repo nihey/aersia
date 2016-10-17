@@ -204,7 +204,7 @@ class Index extends React.Component {
 
   componentDidMount() {
     xhr({
-      uri: 'http://aersia.nihey.org',
+      uri: 'https://aersia.nihey.org/roster.xml',
       useXDR: true,
     }, (err, resp, body) => {
       this.setState({tracks: parse(body)}, () => {
