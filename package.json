@@ -38,6 +38,6 @@
     "xhr": "^2.1.0"
   },
   "devDependencies": {
-    "eslint": "^1.6.0"
+    "eslint": "^6.5.1"
   }
 }
